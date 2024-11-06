@@ -3,17 +3,19 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.ts",
-  "type": "module",
-  "scripts": {
-    "start": "ts-node src/index.ts"
-  },
+  
+  
   "dependencies": {
     "@prisma/client": "^5.22.0",
     "bcrypt": "^5.1.1",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
+    "esm": "^3.2.25",
     "express": "^4.21.1",
     "pg": "^8.13.1"
+  },
+  "scripts": {
+    "start": "ts-node src/index.ts"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.2",

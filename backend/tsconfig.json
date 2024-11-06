@@ -1,12 +1,12 @@
 {
   "compilerOptions": {
-    "module": "CommonJS",
-    "esModuleInterop": true,
-    "target": "ESNext",
-    "outDir": "./dist",
-    "rootDir": "./src"
+    "module": "commonjs",          // Allows ES module syntax
+    "target": "ESNext",          // Compiles to modern JavaScript
+    "moduleResolution": "node",
+    "esModuleInterop": true,     // Enables compatibility with CommonJS
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true
   },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules"]
+  "include": ["src/**/*"]
 }
 

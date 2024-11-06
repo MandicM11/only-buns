@@ -5,7 +5,9 @@
     "moduleResolution": "node",
     "esModuleInterop": true,     // Enables compatibility with CommonJS
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+    "outDir": "./dist",            // Output directory for compiled JavaScript files
+    "rootDir": "./src"  
   },
   "include": ["src/**/*"]
 }

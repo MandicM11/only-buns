@@ -8,10 +8,13 @@ const bcrypt_1 = __importDefault(require("bcrypt"));
 const client_1 = require("@prisma/client");
 const emailService_1 = require("../utils/emailService");
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+const bloom_filters_1 = require("bloom-filters");
 const prisma = new client_1.PrismaClient();
+const loginAttempts = new Map();
+const usernameFilter = new bloom_filters_1.BloomFilter(1000, 3);
 const registerUser = async (req, res) => {
     const { email, username, password, confirmPassword, name, address } = req.body;
-    // Validacije
+    // Validation
     if (!email || !username || !password || !confirmPassword || !name || !address) {
         res.status(400).json({ message: "All fields are required." });
         return;
@@ -20,8 +23,11 @@ const registerUser = async (req, res) => {
         res.status(400).json({ message: "Passwords do not match." });
         return;
     }
+    if (usernameFilter.has(username)) {
+        res.status(400).json({ message: "Username might already be taken." });
+        return;
+    }
     try {
-        console.log("Register route called with data: ", req.body);
         const hashedPassword = await bcrypt_1.default.hash(password, 10);
         const user = await prisma.$transaction(async (tx) => {
             const existingUser = await tx.user.findUnique({
@@ -30,6 +36,8 @@ const registerUser = async (req, res) => {
             if (existingUser) {
                 throw new Error("Username is already taken.");
             }
+            // Simulate delay for testing
+            await new Promise((resolve) => setTimeout(resolve, 1000));
             return await tx.user.create({
                 data: {
                     email,
@@ -41,7 +49,7 @@ const registerUser = async (req, res) => {
                 },
             });
         });
-        console.log("User registered: ", { email, username, name });
+        usernameFilter.add(username);
         const activationToken = jsonwebtoken_1.default.sign({ userId: user.id }, process.env.JWT_SECRET, {
             expiresIn: "1h",
         });
@@ -55,6 +63,23 @@ const registerUser = async (req, res) => {
 exports.registerUser = registerUser;
 const loginUser = async (req, res) => {
     const { email, password } = req.body;
+    const ip = req.ip;
+    const currentAttemptTime = new Date();
+    // Limit login attempts by IP
+    const record = loginAttempts.get(ip) || { attempts: 0, lastAttempt: new Date(0) };
+    const timeSinceLastAttempt = (currentAttemptTime.getTime() - record.lastAttempt.getTime()) / 1000;
+    if (timeSinceLastAttempt < 60) {
+        if (record.attempts >= 5) {
+            res.status(429).json({ message: "Too many login attempts. Please try again later." });
+            return;
+        }
+        record.attempts++;
+    }
+    else {
+        record.attempts = 1; // Reset after 1 minute
+    }
+    record.lastAttempt = currentAttemptTime;
+    loginAttempts.set(ip, record);
     try {
         const user = await prisma.user.findUnique({ where: { email } });
         if (!user || !(await bcrypt_1.default.compare(password, user.password))) {
@@ -69,7 +94,7 @@ const loginUser = async (req, res) => {
         res.json({ message: "Login successful", token });
     }
     catch (error) {
-        res.status(500).json({ message: "An error occurred." });
+        res.status(500).json({ message: "An error occurred during login." });
     }
 };
 exports.loginUser = loginUser;

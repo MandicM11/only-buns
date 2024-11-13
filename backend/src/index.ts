@@ -3,6 +3,9 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import { registerUser } from './controllers/userController';
 import authRoutes from "./routes/authRoutes";
+import postRoutes from "./routes/postRoutes";
+import commentRoutes from "./routes/commentRoutes";
+import likeRoutes from "./routes/likeRoutes";
 
 
 dotenv.config();
@@ -15,6 +18,9 @@ app.use(cors());
 
 // Routes
 app.use('/auth',authRoutes);
+app.use(postRoutes);
+app.use(commentRoutes);
+app.use(likeRoutes);
 
 
 const PORT = process.env.PORT || 3000;

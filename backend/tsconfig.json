@@ -1,14 +1,18 @@
 {
   "compilerOptions": {
     "module": "commonjs",          // Allows ES module syntax
-    "target": "ESNext",          // Compiles to modern JavaScript
-    "moduleResolution": "node",
-    "esModuleInterop": true,     // Enables compatibility with CommonJS
-    "skipLibCheck": true,
+    "target": "ESNext",            // Compiles to modern JavaScript
+    "moduleResolution": "node",    // Resolves modules like Node.js
+    "esModuleInterop": true,       // Allows importing CommonJS modules as ES modules
+    "skipLibCheck": true,          // Skips type checking of declaration files
     "forceConsistentCasingInFileNames": true,
     "outDir": "./dist",            // Output directory for compiled JavaScript files
-    "rootDir": "./src"  
+    "rootDir": "./src",            // Root directory of your TypeScript files
+    "typeRoots": [
+      "node_modules/@types",       // Standard Node.js type definitions
+      "node_modules/.prisma/client" // Prisma types
+    ],
+    "types": ["node"]              // Add this to enable Node.js types
   },
-  "include": ["src/**/*"]
+  "include": ["src/**/*"]          // Include all files under 'src'
 }
-

@@ -8,13 +8,48 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
-  username  String   @unique
+  id        Int       @id @default(autoincrement())
+  email     String    @unique
+  username  String    @unique
   password  String
   name      String
   address   String
-  isActive  Boolean  @default(false)
+  isActive  Boolean   @default(false)
+  createdAt DateTime  @default(now())
+  posts     Post[]    @relation("UserPosts") // obratna relacija
+  comments  Comment[] @relation("UserComments") // obratna relacija
+  likes     Like[]    @relation("UserLikes") // obratna relacija
+}
+
+model Post {
+  id          Int       @id @default(autoincrement())
+  description String
+  image       String
+  location    Json // Koordinate kao JSON
+  createdAt   DateTime  @default(now())
+  userId      Int
+  user        User      @relation("UserPosts", fields: [userId], references: [id]) // relacija sa User
+  comments    Comment[] @relation("PostComments") // obratna relacija
+  likes       Like[]    @relation("PostLikes") // obratna relacija
+}
+
+model Comment {
+  id        Int      @id @default(autoincrement())
+  content   String
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  userId    Int
+  postId    Int
+  user      User     @relation("UserComments", fields: [userId], references: [id]) // relacija sa User
+  post      Post     @relation("PostComments", fields: [postId], references: [id]) // relacija sa Post
+}
+
+model Like {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  postId    Int
+  user      User     @relation("UserLikes", fields: [userId], references: [id]) // relacija sa User
+  post      Post     @relation("PostLikes", fields: [postId], references: [id]) // relacija sa Post
+  createdAt DateTime @default(now())
+
+  @@unique([userId, postId]) // User može lajkovati post samo jednom
 }

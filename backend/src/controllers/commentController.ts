@@ -5,10 +5,11 @@ export class CommentController {
   async addComment(req: Request, res: Response) {
     const { userId, postId, content } = req.body;
     try {
+      console.log ("resources are: ",userId,postId,content)
       const comment = await commentService.addComment(userId, postId, content);
       res.status(201).json(comment);
     } catch (error) {
-      res.status(500).json({ error: 'Error adding comment' });
+      res.status(500).json({ error: 'Error adding comment 123' });
     }
   }
 

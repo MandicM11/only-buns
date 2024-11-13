@@ -4,7 +4,9 @@ import { HttpClientModule } from '@angular/common/http';
 import { ReactiveFormsModule } from '@angular/forms';
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app.routes';
+import { RouterModule } from '@angular/router';
 import { AuthModule } from './auth/auth.module';
+import { CommonModule } from '@angular/common';
 
 @NgModule({
   declarations: [AppComponent],
@@ -13,7 +15,9 @@ import { AuthModule } from './auth/auth.module';
     AppRoutingModule,
     AuthModule,
     HttpClientModule,
-    ReactiveFormsModule  
+    ReactiveFormsModule,
+    RouterModule.forRoot([]),
+    CommonModule  
   ],
   providers: [],
   bootstrap: [AppComponent]

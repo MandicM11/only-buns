@@ -8,7 +8,14 @@
     {{ liked ? 'Dislike' : 'Like' }}
   </button>
 
-  <app-user-location-map [latitude]="post.latitude" [longitude]="post.longitude"></app-user-location-map>
+  <p>{{ post.location }}</p>
+
+  <!-- Show the map only if latitude and longitude are defined -->
+  <app-user-location-map *ngIf="latitude && longitude" 
+                         [latitude]="latitude" 
+                         [longitude]="longitude">
+  </app-user-location-map>
+
 
   <div>
     <h3>Comments</h3>

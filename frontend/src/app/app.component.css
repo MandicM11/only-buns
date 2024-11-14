@@ -1,4 +1,4 @@
-/* Ovdje možete dodati stilove za osnovnu aplikaciju */
+@import "leaflet/dist/leaflet.css";
 h1 {
     color: blue;
   }

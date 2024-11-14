@@ -1,40 +1,38 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, Input, AfterViewInit } from '@angular/core';
 import * as L from 'leaflet';
 
 @Component({
   selector: 'app-user-location-map',
   templateUrl: './user-location-map.component.html',
-  styleUrls: ['./user-location-map.component.css']
+  styleUrls: ['./user-location-map.component.css'],
+  standalone: true
 })
-export class UserLocationMapComponent implements OnInit {
+export class UserLocationMapComponent implements AfterViewInit {
   @Input() latitude!: number;
   @Input() longitude!: number;
-  map!: L.Map;
+  private map: L.Map | undefined;
 
-  ngOnInit(): void {
-    this.initMap();
+  ngAfterViewInit(): void {
+    // Only initialize map if latitude and longitude are defined
+    if (this.latitude !== undefined && this.longitude !== undefined) {
+      this.initMap();
+    } else {
+      console.error('Latitude or Longitude is undefined');
+    }
   }
 
   private initMap(): void {
-    if (!this.latitude || !this.longitude) {
-      console.error("Latitude and Longitude are required for map display");
-      return;
+    if (!this.map) {
+      this.map = L.map('map').setView([this.latitude, this.longitude], 13);
+
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '© OpenStreetMap'
+      }).addTo(this.map);
+
+      L.marker([this.latitude, this.longitude]).addTo(this.map)
+        .bindPopup('User Location')
+        .openPopup();
     }
-
-    // Initialize map centered at user's location
-    this.map = L.map('map', {
-      center: [this.latitude, this.longitude],
-      zoom: 13
-    });
-
-    // Add the OpenStreetMap tiles
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-    }).addTo(this.map);
-
-    // Add a marker at the user's location
-    L.marker([this.latitude, this.longitude]).addTo(this.map)
-      .bindPopup('User Location')
-      .openPopup();
   }
 }

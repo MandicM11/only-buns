@@ -21,20 +21,23 @@ export class PostDetailComponent implements OnInit {
   post: any;
   userId!: number | null;  // Store the logged-in user ID, can be null if not authenticated
   liked: boolean = false;
+  latitude!: number;
+  longitude!: number;
 
   constructor(
     private postService: PostService,
     private likeService: LikeService,
     private commentService: CommentService,
     private route: ActivatedRoute,
-    private authService: AuthService  // Inject AuthService
+    private authService: AuthService,
+    
   ) {}
 
   ngOnInit(): void {
     // Retrieve postId from the URL parameters
     this.route.paramMap.subscribe((params) => {
       this.postId = +params.get('id')!;  // '+' converts the string 'id' to a number
-
+      
       // Fetch the post details using the postId
       this.postService.getPostById(this.postId).subscribe((data) => {
         this.post = data;
@@ -43,7 +46,7 @@ export class PostDetailComponent implements OnInit {
       // Fetch the logged-in user ID from AuthService
       this.userId = this.authService.getUserId();
       console.log('User ID is: ', this.userId);
-
+      this.fetchPostDetails();
       // Check if the user has already liked the post
       this.checkIfLiked();
     });
@@ -108,4 +111,22 @@ export class PostDetailComponent implements OnInit {
       console.error('Error adding comment:', error);
     });
   }
+  fetchPostDetails(): void {
+    this.postService.getPostById(this.postId).subscribe((data) => {
+      this.post = data;
+  
+      // Log the entire post object to confirm the structure
+      console.log("Post data received:", this.post);
+  
+      // Extract latitude and longitude, checking the structure of location
+      if (this.post && this.post.location) {
+        this.latitude = this.post.location.lat;
+        this.longitude = this.post.location.lng;
+        console.log("Latitude and Longitude set to:", this.latitude, this.longitude);
+      } else {
+        console.error("Location data is missing or malformed in the post.");
+      }
+    });
+  }
+  
 }

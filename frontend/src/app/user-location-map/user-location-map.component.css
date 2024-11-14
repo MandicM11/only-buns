@@ -1,0 +1,6 @@
+/* user-location-map.component.css */
+#map {
+    height: 400px;  /* Set your desired height */
+    width: 100%;    /* Set width to fill the container */
+  }
+  

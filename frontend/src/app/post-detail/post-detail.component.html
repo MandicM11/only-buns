@@ -8,6 +8,7 @@
     {{ liked ? 'Dislike' : 'Like' }}
   </button>
 
+  <app-user-location-map [latitude]="post.latitude" [longitude]="post.longitude"></app-user-location-map>
 
   <div>
     <h3>Comments</h3>

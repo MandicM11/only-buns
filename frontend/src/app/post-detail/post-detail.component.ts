@@ -7,12 +7,13 @@ import { AuthService } from '../services/auth.service';  // Inject AuthService t
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
+import { UserLocationMapComponent } from '../user-location-map/user-location-map.component'; 
 
 @Component({
   selector: 'app-post-detail',
   standalone: true,
   templateUrl: './post-detail.component.html',
-  imports: [RouterModule, HttpClientModule, CommonModule],
+  imports: [RouterModule, HttpClientModule, CommonModule, UserLocationMapComponent],
   styleUrls: ['./post-detail.component.css']
 })
 export class PostDetailComponent implements OnInit {

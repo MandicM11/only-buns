@@ -13,8 +13,9 @@ import { UserLocationMapComponent } from '../user-location-map/user-location-map
   selector: 'app-post-detail',
   standalone: true,
   templateUrl: './post-detail.component.html',
+  styleUrls: ['./post-detail.component.css'],
   imports: [RouterModule, HttpClientModule, CommonModule, UserLocationMapComponent],
-  styleUrls: ['./post-detail.component.css']
+  
 })
 export class PostDetailComponent implements OnInit {
   postId!: number;
@@ -23,6 +24,7 @@ export class PostDetailComponent implements OnInit {
   liked: boolean = false;
   latitude!: number;
   longitude!: number;
+  userNames: { [key: number]: string } = {};
 
   constructor(
     private postService: PostService,
@@ -32,6 +34,8 @@ export class PostDetailComponent implements OnInit {
     private authService: AuthService,
     
   ) {}
+
+  
 
   ngOnInit(): void {
     // Retrieve postId from the URL parameters
@@ -111,20 +115,39 @@ export class PostDetailComponent implements OnInit {
       console.error('Error adding comment:', error);
     });
   }
+  
   fetchPostDetails(): void {
     this.postService.getPostById(this.postId).subscribe((data) => {
       this.post = data;
-  
-      // Log the entire post object to confirm the structure
-      console.log("Post data received:", this.post);
-  
-      // Extract latitude and longitude, checking the structure of location
       if (this.post && this.post.location) {
         this.latitude = this.post.location.lat;
         this.longitude = this.post.location.lng;
-        console.log("Latitude and Longitude set to:", this.latitude, this.longitude);
+      }
+      this.loadUsernamesForComments();
+    });
+  }
+
+  loadUsernamesForComments(): void {
+    // Create an array of promises for loading usernames for each comment
+    const usernamePromises = this.post.comments.map((comment: any) => 
+      this.loadUsernameForComment(comment.userId)
+    );
+    
+    // Wait for all usernames to be loaded
+    Promise.all(usernamePromises).then(() => {
+      // After all usernames are loaded, you can safely render the comments
+      console.log('All usernames are loaded:', this.userNames);
+    });
+  }
+  loadUsernameForComment(userId: number): Promise<void> {
+    return new Promise((resolve) => {
+      if (!this.userNames[userId]) {
+        this.authService.getUserById(userId).subscribe((user) => {
+          this.userNames[userId] = user.name;
+          resolve();
+        });
       } else {
-        console.error("Location data is missing or malformed in the post.");
+        resolve();
       }
     });
   }

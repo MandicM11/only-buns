@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { AuthService } from '../../services/auth.service'; // Import AuthService
 import { HttpClientModule } from '@angular/common/http';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-login',
@@ -15,7 +16,8 @@ export class LoginComponent {
 
   constructor(
     private fb: FormBuilder,
-    private authService: AuthService // Inject AuthService
+    private authService: AuthService,
+    private router: Router
   ) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
@@ -31,6 +33,7 @@ export class LoginComponent {
           console.log('Login successful:', response.message);
           alert('Login successful');
           localStorage.setItem('authToken', response.token);
+          this.router.navigate(['/posts']);
         },
         error: (error) => {
           console.error('Login error:', error.error.message);

@@ -1,14 +1,15 @@
 <div *ngIf="post">
   <h2>{{ post.description }}</h2>
-  <img [src]="post.image" alt="Post Image">
-  <p>{{ post.location }}</p>
+  <div class="image-wrapper">
+  <img [src]="'http://localhost:3000' + post.image" alt="Post Image" class="image-wrapper" />
+  </div>
 
   <!-- Likes and Comments Section -->
   <button (click)="toggleLike()">
     {{ liked ? 'Dislike' : 'Like' }}
   </button>
 
-  <p>{{ post.location }}</p>
+  
 
   <!-- Show the map only if latitude and longitude are defined -->
   <app-user-location-map *ngIf="latitude && longitude" 
@@ -20,7 +21,7 @@
   <div>
     <h3>Comments</h3>
     <div *ngFor="let comment of post.comments">
-      <p>{{ comment.content }}</p>
+      <p><strong>{{ userNames[comment.userId] || 'Anonymous' }}</strong>: {{ comment.content }}</p>
     </div>
 
     <textarea #commentContent placeholder="Add a comment"></textarea>

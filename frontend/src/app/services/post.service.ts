@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';  
+
 
 @Injectable({
   providedIn: 'root'
@@ -25,4 +27,14 @@ export class PostService {
   deletePost(id: number): Observable<any> {
     return this.http.delete(`${this.apiUrl}/${id}`);
   }
+
+  getPosts(): Observable<any> {
+    return this.http.get<any[]>(this.apiUrl).pipe(
+      map(posts => {
+        // Sort posts by createdAt field (ascending or descending)
+        return posts.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+      })
+    );
+  }
+
 }

@@ -4,7 +4,6 @@
   "description": "",
   "main": "index.ts",
   "dependencies": {
-    "@prisma/client": "^5.22.0",
     "bcrypt": "^5.1.1",
     "bloom-filters": "^3.0.2",
     "body-parser": "^1.20.3",
@@ -21,17 +20,25 @@
     "pg": "^8.13.1"
   },
   "scripts": {
-    "start": "ts-node src/index.ts"
+    "dev": "concurrently \"npm run start\" \"npm run test\"",
+    "start": "node dist/index.js",  
+    "test": "jest"  
   },
   "devDependencies": {
+    "@prisma/client": "^5.22.0",
     "@types/bcrypt": "^5.0.2",
     "@types/cors": "^2.8.17",
     "@types/deno": "^2.0.0",
     "@types/dotenv": "^8.2.3",
     "@types/express": "^5.0.0",
+    "@types/jest": "^29.5.14",
     "@types/node": "^22.8.7",
     "@types/pg": "^8.11.10",
+    "concurrently": "^9.1.0",
+    "jest": "^29.7.0",
+    "jest-mock": "^29.7.0",
     "prisma": "^5.22.0",
+    "ts-jest": "^29.2.5",
     "ts-node": "^10.9.2",
     "typescript": "^5.6.3"
   }

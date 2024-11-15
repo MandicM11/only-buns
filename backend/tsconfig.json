@@ -12,7 +12,7 @@
       "node_modules/@types",       // Standard Node.js type definitions
       "node_modules/.prisma/client" // Prisma types
     ],
-    "types": ["node"]              // Add this to enable Node.js types
+    "types": ["node","jest"]              // Add this to enable Node.js types
   },
   "include": ["src/**/*"]          // Include all files under 'src'
 }

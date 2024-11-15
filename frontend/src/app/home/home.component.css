@@ -1,0 +1,38 @@
+.home-page {
+    text-align: center;
+    padding: 20px;
+  }
+  
+  .dashboard-menu {
+    margin: 20px auto;
+    display: flex;
+    justify-content: center;
+  }
+  
+  .dashboard-menu ul {
+    list-style-type: none;
+    padding: 0;
+    display: flex;
+    gap: 20px;
+  }
+  
+  .dashboard-menu li {
+    font-size: 18px;
+  }
+  
+  .dashboard-menu a {
+    text-decoration: none;
+    color: #007bff;
+    transition: color 0.3s;
+  }
+  
+  .dashboard-menu a:hover {
+    color: #0056b3;
+  }
+  
+  .active-link {
+    font-weight: bold;
+    text-decoration: underline;
+    color: #0056b3;
+  }
+  

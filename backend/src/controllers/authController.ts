@@ -1,6 +1,6 @@
 import { Request, Response, RequestHandler } from "express";
 import bcrypt from "bcrypt";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, Prisma } from "@prisma/client";
 import { sendActivationEmail } from "../utils/emailService";
 import jwt from "jsonwebtoken";
 import { BloomFilter } from "bloom-filters";
@@ -31,7 +31,7 @@ export const registerUser: RequestHandler = async (req: Request, res: Response) 
 
     const user = await prisma.$transaction(async (tx) => {
       const existingUser = await tx.user.findUnique({
-        where: { username },
+        where: { email },
       });
       if (existingUser) {
         throw new Error("Username is already taken.");
@@ -50,15 +50,28 @@ export const registerUser: RequestHandler = async (req: Request, res: Response) 
       });
     });
     
-    usernameFilter.add(username);
-    const activationToken = jwt.sign({ userId: user.id }, process.env.JWT_SECRET!, {
-      expiresIn: "1h",
-    });
-    await sendActivationEmail(user.email, activationToken);
+    usernameFilter.add(email);
+    // const activationToken = jwt.sign({ userId: user.id }, process.env.JWT_SECRET!, {
+    //   expiresIn: "1h",
+    // });
+    //await sendActivationEmail(user.email, activationToken);
 
     res.status(201).json({ message: "Registration successful. Check your email for activation link." });
   } catch (error) {
-    res.status(400).json({ message: (error as Error).message });
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      // Check if the error is related to the unique constraint violation
+      if (error.code === "P2002") {
+        const field = error.meta?.target[0]; // Get the field that caused the unique constraint violation
+        const message = field === "email" ? "Email is already taken." : "Username is already taken.";
+        res.status(400).json({ message });
+      } else {
+        res.status(400).json({ message: "A known error occurred: " + error.message });
+      }
+    } else if (error instanceof Error) {
+      res.status(400).json({ message: error.message || "An error occurred during registration." });
+    } else {
+      res.status(500).json({ message: "An unexpected error occurred." });
+    }
   }
 };
 
@@ -89,10 +102,10 @@ export const loginUser: RequestHandler = async (req: Request, res: Response): Pr
       res.status(401).json({ message: "Invalid email or password." });
       return;
     }
-    if (!user.isActive) {
-      res.status(403).json({ message: "Please activate your account first." });
-      return;
-    }
+    // if (!user.isActive) {
+    //   res.status(403).json({ message: "Please activate your account first." });
+    //   return;
+    // }
 
     const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET!, { expiresIn: "1h" });
     res.json({ message: "Login successful", token });

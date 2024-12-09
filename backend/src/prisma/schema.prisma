@@ -33,7 +33,9 @@ model Post {
   user        User      @relation("UserPosts", fields: [userId], references: [id]) // relacija sa User
   comments    Comment[] @relation("PostComments") // obratna relacija
   likes       Like[]    @relation("PostLikes") // obratna relacija
+  likesCount  Int      @default(0)  // Polje za broj lajkova
 }
+
 
 model Comment {
   id        Int      @id @default(autoincrement())

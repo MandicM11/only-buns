@@ -6,7 +6,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.activateAccount = exports.loginUser = exports.registerUser = void 0;
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const client_1 = require("@prisma/client");
-const emailService_1 = require("../utils/emailService");
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const bloom_filters_1 = require("bloom-filters");
 const prisma = new client_1.PrismaClient();
@@ -31,7 +30,7 @@ const registerUser = async (req, res) => {
         const hashedPassword = await bcrypt_1.default.hash(password, 10);
         const user = await prisma.$transaction(async (tx) => {
             const existingUser = await tx.user.findUnique({
-                where: { username },
+                where: { email },
             });
             if (existingUser) {
                 throw new Error("Username is already taken.");
@@ -49,15 +48,31 @@ const registerUser = async (req, res) => {
                 },
             });
         });
-        usernameFilter.add(username);
-        const activationToken = jsonwebtoken_1.default.sign({ userId: user.id }, process.env.JWT_SECRET, {
-            expiresIn: "1h",
-        });
-        await (0, emailService_1.sendActivationEmail)(user.email, activationToken);
+        usernameFilter.add(email);
+        // const activationToken = jwt.sign({ userId: user.id }, process.env.JWT_SECRET!, {
+        //   expiresIn: "1h",
+        // });
+        //await sendActivationEmail(user.email, activationToken);
         res.status(201).json({ message: "Registration successful. Check your email for activation link." });
     }
     catch (error) {
-        res.status(400).json({ message: error.message });
+        if (error instanceof client_1.Prisma.PrismaClientKnownRequestError) {
+            // Check if the error is related to the unique constraint violation
+            if (error.code === "P2002") {
+                const field = error.meta?.target[0]; // Get the field that caused the unique constraint violation
+                const message = field === "email" ? "Email is already taken." : "Username is already taken.";
+                res.status(400).json({ message });
+            }
+            else {
+                res.status(400).json({ message: "A known error occurred: " + error.message });
+            }
+        }
+        else if (error instanceof Error) {
+            res.status(400).json({ message: error.message || "An error occurred during registration." });
+        }
+        else {
+            res.status(500).json({ message: "An unexpected error occurred." });
+        }
     }
 };
 exports.registerUser = registerUser;
@@ -86,10 +101,10 @@ const loginUser = async (req, res) => {
             res.status(401).json({ message: "Invalid email or password." });
             return;
         }
-        if (!user.isActive) {
-            res.status(403).json({ message: "Please activate your account first." });
-            return;
-        }
+        // if (!user.isActive) {
+        //   res.status(403).json({ message: "Please activate your account first." });
+        //   return;
+        // }
         const token = jsonwebtoken_1.default.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: "1h" });
         res.json({ message: "Login successful", token });
     }

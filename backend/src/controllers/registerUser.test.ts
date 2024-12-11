@@ -1,5 +1,6 @@
 import dotenv from "dotenv";
 dotenv.config({ path: ".env.test" });
+//ignore test for now it fails regardles of what happens logic flawed
 
 import { PrismaClient } from "@prisma/client";
 import { registerUser } from "../controllers/userController";

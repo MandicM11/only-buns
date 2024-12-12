@@ -38,7 +38,19 @@ export class PostController {
       await postService.deletePost(Number(id));
       res.status(204).end();
     } catch (error) {
+      console.error('Error deleting post in controller:', error);
       res.status(500).json({ error: 'Error deleting post' });
+    }
+  }
+  async updatePost(req: Request, res: Response): Promise<void> {
+    const { id } = req.params;
+    const { description, image, location } = req.body;
+
+    try {
+      const post = await postService.updatePost(Number(id), description, image, location);
+      res.status(200).json(post);
+    } catch (error) {
+      res.status(500).json({ error: 'Error updating post' });
     }
   }
 }

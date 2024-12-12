@@ -44,7 +44,7 @@ model Comment {
   userId    Int
   postId    Int
   user      User     @relation("UserComments", fields: [userId], references: [id]) // relacija sa User
-  post      Post     @relation("PostComments", fields: [postId], references: [id]) // relacija sa Post
+  post      Post     @relation("PostComments", fields: [postId], references: [id], onDelete: Cascade) // relacija sa Post
 }
 
 model Like {
@@ -52,7 +52,7 @@ model Like {
   userId    Int
   postId    Int
   user      User     @relation("UserLikes", fields: [userId], references: [id]) // relacija sa User
-  post      Post     @relation("PostLikes", fields: [postId], references: [id]) // relacija sa Post
+  post      Post     @relation("PostLikes", fields: [postId], references: [id], onDelete: Cascade) // relacija sa Post
   createdAt DateTime @default(now())
 
   @@unique([userId, postId]) // User može lajkovati post samo jednom

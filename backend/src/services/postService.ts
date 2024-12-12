@@ -65,10 +65,35 @@ export class PostService {
   }
 
   async deletePost(postId: number) {
-    return prisma.post.delete({
+    try {
+      return await prisma.post.delete({
+        where: { id: postId },
+      });
+    } catch (error) {
+      console.error('Error deleting post:', error);
+      throw new Error('Error deleting post');
+    }
+  }
+  
+
+  async updatePost(postId: number, description: string, image: string, location: object) {
+    let imagePath = undefined;
+  
+    // Ako je slika nova, sačuvaj je na disku
+    if (image) {
+      imagePath = this.saveImageToDisk(image);
+    }
+  
+    return prisma.post.update({
       where: { id: postId },
+      data: {
+        description,
+        image: imagePath ? imagePath : undefined, // Ako nema nove slike, nemojte menjati
+        location,
+      },
     });
   }
+  
 }
 
 export const postService = new PostService();

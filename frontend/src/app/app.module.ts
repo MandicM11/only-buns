@@ -7,6 +7,7 @@ import { AppRoutingModule } from './app.routes';
 import { RouterModule } from '@angular/router';
 import { AuthModule } from './auth/auth.module';
 import { CommonModule } from '@angular/common';
+import { AuthService} from './services/auth.service'
 
 @NgModule({
   declarations: [AppComponent],
@@ -17,9 +18,10 @@ import { CommonModule } from '@angular/common';
     HttpClientModule,
     ReactiveFormsModule,
     RouterModule.forRoot([]),
-    CommonModule  
+    CommonModule,
+    
   ],
-  providers: [],
+  providers: [AuthService],
   bootstrap: [AppComponent]
 })
 export class AppModule {}

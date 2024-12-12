@@ -20,7 +20,7 @@ import { UserLocationMapComponent } from '../user-location-map/user-location-map
 export class PostDetailComponent implements OnInit {
   postId!: number;
   post: any;
-  userId!: number | null;  // Store the logged-in user ID, can be null if not authenticated
+  userId!: number | null;  
   liked: boolean = false;
   latitude!: number;
   longitude!: number;
@@ -69,26 +69,28 @@ export class PostDetailComponent implements OnInit {
       alert('User is not logged in!');
       return;
     }
-
+  
     const likeData = { postId: this.postId, userId: this.userId };
-
+  
     if (this.liked) {
-      // Remove like (dislike)
       this.likeService.removeLike(likeData).subscribe(
-        (response) => {
-          this.liked = false;  // User disliked the post
-          this.post.likes -= 1;  // Decrement the like count
+        () => {
+          this.liked = false;
+          if (this.post?.likesCount !== undefined) {
+            this.post.likesCount -= 1; // Smanjite broj lajkova
+          }
         },
         (error) => {
           console.error('Error removing like:', error);
         }
       );
     } else {
-      // Add like
       this.likeService.addLike(likeData).subscribe(
-        (response) => {
-          this.liked = true;  // User liked the post
-          this.post.likes += 1;  // Increment the like count
+        () => {
+          this.liked = true;
+          if (this.post?.likesCount !== undefined) {
+            this.post.likesCount += 1; // Povećajte broj lajkova
+          }
         },
         (error) => {
           console.error('Error adding like:', error);
@@ -96,6 +98,7 @@ export class PostDetailComponent implements OnInit {
       );
     }
   }
+  
 
   addComment(commentContent: string): void {
     if (!this.userId) {
@@ -150,6 +153,30 @@ export class PostDetailComponent implements OnInit {
         resolve();
       }
     });
+
   }
+  editPost() {
+    if (this.userId !== this.post.userId) {
+      alert('You do not have permission to edit this post.');
+      return;
+    }
+    console.log('Editing post:', this.post.id);
+    // Implementirajte logiku za navigaciju na edit stranicu ili otvaranje modalnog prozora
+  }
+  
+  deletePost() {
+    if (this.userId !== this.post.userId) {
+      alert('You do not have permission to delete this post.');
+      return;
+    }
+  
+    if (confirm('Are you sure you want to delete this post?')) {
+      this.postService.deletePost(this.post.id).subscribe(() => {
+        console.log('Post deleted');
+        // Implementirajte osvežavanje liste postova ili preusmeravanje
+      });
+    }
+  }
+  
   
 }

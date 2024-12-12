@@ -1,9 +1,10 @@
 <nav class="main-menu">
   <ul>
     <li><a routerLink="/home" routerLinkActive="active-link">Home</a></li>
-    <li><a routerLink="/login" routerLinkActive="active-link">Login</a></li>
-    <li><a routerLink="/register" routerLinkActive="active-link">Register</a></li>
-    <li><a routerLink="/posts" routerLinkActive="active-link">Posts</a></li>
+    <li *ngIf="!authService.isLoggedIn()"><a routerLink="/login" routerLinkActive="active-link">Login</a></li>
+    <li *ngIf="!authService.isLoggedIn()"><a routerLink="/register" routerLinkActive="active-link">Register</a></li>
+    <li *ngIf="authService.isLoggedIn()"><a routerLink="/posts" routerLinkActive="active-link">Posts</a></li>
+    <li *ngIf="authService.isLoggedIn()"><a (click)="logout()">Logout</a></li>
   </ul>
 </nav>
 <router-outlet></router-outlet>

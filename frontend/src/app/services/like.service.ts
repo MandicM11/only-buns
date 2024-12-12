@@ -19,7 +19,9 @@ export class LikeService {
     return this.http.get<any[]>(`${this.apiUrl}/${postId}`);
   }
 
-  removeLike(likeData: any): Observable<any> {
-    return this.http.delete(this.apiUrl, likeData);
+  removeLike(likeData: { postId: number; userId: number }): Observable<any> {
+    const params = { postId: likeData.postId.toString(), userId: likeData.userId.toString() };
+    return this.http.delete(this.apiUrl, { params });
   }
+  
 }

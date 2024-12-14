@@ -93,6 +93,41 @@ export class PostService {
       },
     });
   }
+  async getPostsInBounds(southLat: number, southLng: number, northLat: number, northLng: number) {
+    return prisma.post.findMany({
+      where: {
+        AND: [
+          {
+            location: {
+              path: ['lat'],  // Pristupamo 'lat' unutar JSON objekta
+              gte: southLat,  // Filtriramo za 'lat' vrednosti unutar granica
+            },
+          },
+          {
+            location: {
+              path: ['lat'],  // Filtriramo po 'lat' vrednosti unutar granica
+              lte: northLat,  // Manje ili jednako 'northLat'
+            },
+          },
+          {
+            location: {
+              path: ['lng'],  // Pristupamo 'lng' unutar JSON objekta
+              gte: southLng,  // Filtriramo za 'lng' vrednosti unutar granica
+            },
+          },
+          {
+            location: {
+              path: ['lng'],  // Filtriramo po 'lng' vrednosti unutar granica
+              lte: northLng,  // Manje ili jednako 'northLng'
+            },
+          },
+        ],
+      },
+      include: { user: true, comments: true, likes: true },
+    });
+  }
+  
+  
   
 }
 

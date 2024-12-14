@@ -7,7 +7,9 @@ import { AuthService } from '../services/auth.service';  // Inject AuthService t
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
+import { Router } from '@angular/router';
 import { UserLocationMapComponent } from '../user-location-map/user-location-map.component'; 
+
 
 @Component({
   selector: 'app-post-detail',
@@ -32,6 +34,7 @@ export class PostDetailComponent implements OnInit {
     private commentService: CommentService,
     private route: ActivatedRoute,
     private authService: AuthService,
+    private router: Router
     
   ) {}
 
@@ -161,7 +164,7 @@ export class PostDetailComponent implements OnInit {
       return;
     }
     console.log('Editing post:', this.post.id);
-    // Implementirajte logiku za navigaciju na edit stranicu ili otvaranje modalnog prozora
+    this.router.navigate(['/edit-post', this.post.id]);
   }
   
   deletePost() {
@@ -173,7 +176,7 @@ export class PostDetailComponent implements OnInit {
     if (confirm('Are you sure you want to delete this post?')) {
       this.postService.deletePost(this.post.id).subscribe(() => {
         console.log('Post deleted');
-        // Implementirajte osvežavanje liste postova ili preusmeravanje
+        this.router.navigate(['/posts']);
       });
     }
   }

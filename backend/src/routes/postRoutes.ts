@@ -8,5 +8,6 @@ router.get("/posts/:id", postController.getPostById);
 router.get("/posts", postController.getAllPosts);
 router.put("/posts/:id", postController.updatePost);
 router.delete("/posts/:id", postController.deletePost);
+router.get('/posts/nearby', postController.getPostsInBounds);
 
 export default router;

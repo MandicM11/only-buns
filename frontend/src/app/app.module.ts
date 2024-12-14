@@ -7,7 +7,8 @@ import { AppRoutingModule } from './app.routes';
 import { RouterModule } from '@angular/router';
 import { AuthModule } from './auth/auth.module';
 import { CommonModule } from '@angular/common';
-import { AuthService} from './services/auth.service'
+import { AuthService} from './services/auth.service';
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [AppComponent],
@@ -19,6 +20,7 @@ import { AuthService} from './services/auth.service'
     ReactiveFormsModule,
     RouterModule.forRoot([]),
     CommonModule,
+    FormsModule
     
   ],
   providers: [AuthService],

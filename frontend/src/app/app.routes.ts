@@ -12,6 +12,7 @@ import { FollowedPostsComponent } from './followed-posts/followed-posts.componen
 import { TrendsComponent } from './trends/trends.component';
 import { ChatComponent } from './chat/chat.component';
 import { ProfileComponent } from './profile/profile.component';
+import { PostEditComponent } from './post-edit/post-edit.component';
 
 
 
@@ -30,6 +31,7 @@ const routes: Routes = [
   { path: 'chat', component: ChatComponent },
   { path: 'profile', component: ProfileComponent },
   { path: '', redirectTo: '/home', pathMatch: 'full' },
+  { path: 'edit-post/:id', component: PostEditComponent }, 
 ];
 
 @NgModule({

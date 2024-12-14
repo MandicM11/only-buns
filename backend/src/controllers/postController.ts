@@ -53,6 +53,32 @@ export class PostController {
       res.status(500).json({ error: 'Error updating post' });
     }
   }
+  async getPostsInBounds(req: Request, res: Response): Promise<void> {
+    const { southLat, southLng, northLat, northLng } = req.query;
+
+    if (
+      !southLat || !southLng || !northLat || !northLng ||
+      isNaN(Number(southLat)) || isNaN(Number(southLng)) || 
+      isNaN(Number(northLat)) || isNaN(Number(northLng))
+    ) {
+      res.status(400).json({ error: 'Invalid latitude and longitude values' });
+      return;
+    }
+
+    try {
+      const posts = await postService.getPostsInBounds(
+        Number(southLat),
+        Number(southLng),
+        Number(northLat),
+        Number(northLng)
+      );
+      res.json(posts);
+    } catch (error) {
+      console.error('Error retrieving nearby posts:', error);
+      res.status(500).json({ error: 'Error retrieving nearby posts' });
+    }
+  }
+
 }
 
 export const postController = new PostController();

@@ -69,6 +69,8 @@ export class PostController {
   }
 
   async getPostsInRadius(req: Request, res: Response): Promise<void> {
+    console.log('getPostsInRadius controller function called');
+
     const { userLat, userLng, radiusKm } = req.query;
   
     console.log('Received request with params:', { userLat, userLng, radiusKm });

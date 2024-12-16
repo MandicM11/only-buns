@@ -16,6 +16,8 @@ model User {
   password  String
   name      String
   address   String
+  latitude   Float?  
+  longitude  Float?
   isActive  Boolean   @default(false)
   createdAt DateTime  @default(now())
   posts     Post[]    @relation("UserPosts") // obratna relacija

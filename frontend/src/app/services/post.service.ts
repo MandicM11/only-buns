@@ -40,25 +40,16 @@ export class PostService {
       })
     );
   }
-  getPostsInBounds(
-    lat: number,
-    lng: number,
-    zoom: number,
-    southLat?: number,
-    southLng?: number,
-    northLat?: number,
-    northLng?: number
-  ): Observable<any[]> {
-    // Ako neki parametri nisu prisutni, neće biti dodati u URL
-    let url = `${this.apiUrl}/posts/nearby?lat=${lat}&lng=${lng}&zoom=${zoom}`;
-  
-    // Dodavanje optional parametara samo ako su prisutni
-    if (southLat && southLng && northLat && northLng) {
-      url += `&southLat=${southLat}&southLng=${southLng}&northLat=${northLat}&northLng=${northLng}`;
-    }
-  
-    return this.http.get<any[]>(url);
+
+  getPostsInRadius(userLat: number, userLng: number, radiusKm: number = 1000): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/withinBounds?userLat=${userLat}&userLng=${userLng}&radiusKm=${radiusKm}`);
   }
-  
+ 
+
 
 }
+
+
+  
+
+

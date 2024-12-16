@@ -4,6 +4,13 @@ import { postService } from "../services/postService";
 export class PostController {
   async createPost(req: Request, res: Response): Promise<void> {
     const { userId, description, image, location } = req.body;
+
+    // Ensure location is in the correct format
+    if (!location || !location.lat || !location.lng) {
+      res.status(400).json({ error: 'Location must include lat and lng' });
+      return;
+    }
+
     try {
       const post = await postService.createPost(userId, description, image, location);
       res.status(201).json(post);
@@ -42,9 +49,16 @@ export class PostController {
       res.status(500).json({ error: 'Error deleting post' });
     }
   }
+
   async updatePost(req: Request, res: Response): Promise<void> {
     const { id } = req.params;
     const { description, image, location } = req.body;
+
+    // Ensure location is in the correct format
+    if (location && (!location.lat || !location.lng)) {
+      res.status(400).json({ error: 'Location must include lat and lng' });
+      return;
+    }
 
     try {
       const post = await postService.updatePost(Number(id), description, image, location);
@@ -53,32 +67,35 @@ export class PostController {
       res.status(500).json({ error: 'Error updating post' });
     }
   }
-  async getPostsInBounds(req: Request, res: Response): Promise<void> {
-    const { southLat, southLng, northLat, northLng } = req.query;
 
+  async getPostsInRadius(req: Request, res: Response): Promise<void> {
+    const { userLat, userLng, radiusKm } = req.query;
+  
+    console.log('Received request with params:', { userLat, userLng, radiusKm });
+  
+    // Validate latitude, longitude, and radius
     if (
-      !southLat || !southLng || !northLat || !northLng ||
-      isNaN(Number(southLat)) || isNaN(Number(southLng)) || 
-      isNaN(Number(northLat)) || isNaN(Number(northLng))
+      !userLat || !userLng ||
+      isNaN(Number(userLat)) || isNaN(Number(userLng)) ||
+      (radiusKm && isNaN(Number(radiusKm)))
     ) {
-      res.status(400).json({ error: 'Invalid latitude and longitude values' });
+      res.status(400).json({ error: 'Invalid latitude, longitude, or radius' });
       return;
     }
-
+  
     try {
-      const posts = await postService.getPostsInBounds(
-        Number(southLat),
-        Number(southLng),
-        Number(northLat),
-        Number(northLng)
+      const posts = await postService.getPostsInRadius(
+        Number(userLat),
+        Number(userLng),
+        radiusKm ? Number(radiusKm) : 1000 // Default radius of 1000 km
       );
       res.json(posts);
     } catch (error) {
-      console.error('Error retrieving nearby posts:', error);
-      res.status(500).json({ error: 'Error retrieving nearby posts' });
+      console.error('Error retrieving posts within radius:', error);
+      res.status(500).json({ error: 'Error retrieving posts within radius' });
     }
   }
-
+  
 }
 
 export const postController = new PostController();

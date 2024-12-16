@@ -13,6 +13,7 @@ import { TrendsComponent } from './trends/trends.component';
 import { ChatComponent } from './chat/chat.component';
 import { ProfileComponent } from './profile/profile.component';
 import { PostEditComponent } from './post-edit/post-edit.component';
+import { UserMapComponent} from './user-map/user-map.component'
 
 
 
@@ -31,6 +32,7 @@ const routes: Routes = [
   { path: 'chat', component: ChatComponent },
   { path: 'profile', component: ProfileComponent },
   { path: '', redirectTo: '/home', pathMatch: 'full' },
+  { path:  'nearby', component: UserMapComponent},
   { path: 'edit-post/:id', component: PostEditComponent }, 
 ];
 

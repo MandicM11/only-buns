@@ -4,27 +4,33 @@ import path from 'path';
 
 const prisma = new PrismaClient();
 
+// Haversine formula to calculate distance between two points (lat, lng) in kilometers
+const haversine = (lat1: number, lon1: number, lat2: number, lon2: number): number => {
+  const R = 6371; // Radius of the Earth in km
+  const dLat = (lat2 - lat1) * (Math.PI / 180);  // Convert degrees to radians
+  const dLon = (lon2 - lon1) * (Math.PI / 180);  // Convert degrees to radians
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(lat1 * (Math.PI / 180)) * Math.cos(lat2 * (Math.PI / 180)) *
+    Math.sin(dLon / 2) * Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c; // Distance in km
+};
+
 export class PostService {
   // Save the image to disk
   private saveImageToDisk(base64String: string): string {
-    // Extract the Base64 string without data URI prefix
     const base64Data = base64String.replace(/^data:image\/\w+;base64,/, "");
     const imageBuffer = Buffer.from(base64Data, 'base64');
-
-    // Generate a unique filename for the image
     const fileName = `${Date.now()}.png`;
-    
-    // Use absolute path for the uploads directory (adjust based on your environment)
-    const uploadsFolder = '/home/mirko/Documents/only-buns/backend/uploads';  // Replace with your desired path
+    const uploadsFolder = '/home/mirko/Documents/only-buns/backend/uploads';
     const filePath = path.join(uploadsFolder, fileName);
 
-    // Ensure the uploads folder exists, if not, create it
     if (!fs.existsSync(uploadsFolder)) {
-      fs.mkdirSync(uploadsFolder, { recursive: true });  // Create folder if it doesn't exist
+      fs.mkdirSync(uploadsFolder, { recursive: true });
     }
 
     try {
-      // Write the image to the uploads folder
       fs.writeFileSync(filePath, imageBuffer);
       console.log(`Image saved at: ${filePath}`);
     } catch (error) {
@@ -32,20 +38,17 @@ export class PostService {
       throw new Error('Image save failed');
     }
 
-    return `/uploads/${fileName}`;  // Return the relative file path to store in DB
+    return `/uploads/${fileName}`;
   }
 
   // Create a new post with Base64 image
   async createPost(userId: number, description: string, image: string, location: object) {
-    // Save the image and get the file path
     const imagePath = this.saveImageToDisk(image);
-
-    // Create the post with image path
     return prisma.post.create({
       data: {
         userId,
         description,
-        image: imagePath,  // Store the relative path in the DB
+        image: imagePath,
         location,
       },
     });
@@ -74,57 +77,50 @@ export class PostService {
       throw new Error('Error deleting post');
     }
   }
-  
 
   async updatePost(postId: number, description: string, image: string, location: object) {
     let imagePath = undefined;
-  
-    // Ako je slika nova, sačuvaj je na disku
+
     if (image) {
       imagePath = this.saveImageToDisk(image);
     }
-  
+
     return prisma.post.update({
       where: { id: postId },
       data: {
         description,
-        image: imagePath ? imagePath : undefined, // Ako nema nove slike, nemojte menjati
+        image: imagePath ? imagePath : undefined,
         location,
       },
     });
   }
-  async getPostsInBounds(southLat: number, southLng: number, northLat: number, northLng: number) {
-    return prisma.post.findMany({
-      where: {
-        AND: [
-          {
-            location: {
-              path: ['lat'],  // Pristupamo 'lat' unutar JSON objekta
-              gte: southLat,  // Filtriramo za 'lat' vrednosti unutar granica
-            },
-          },
-          {
-            location: {
-              path: ['lat'],  // Filtriramo po 'lat' vrednosti unutar granica
-              lte: northLat,  // Manje ili jednako 'northLat'
-            },
-          },
-          {
-            location: {
-              path: ['lng'],  // Pristupamo 'lng' unutar JSON objekta
-              gte: southLng,  // Filtriramo za 'lng' vrednosti unutar granica
-            },
-          },
-          {
-            location: {
-              path: ['lng'],  // Filtriramo po 'lng' vrednosti unutar granica
-              lte: northLng,  // Manje ili jednako 'northLng'
-            },
-          },
-        ],
-      },
-      include: { user: true, comments: true, likes: true },
-    });
+
+  
+  
+  async getPostsInRadius(userLat: number, userLng: number, radiusKm: number = 1000) {
+    console.log('Fetching posts within radius:', { userLat, userLng, radiusKm });
+  
+    try {
+      // Fetch all posts
+      const posts = await prisma.post.findMany({
+        include: { user: true, comments: true, likes: true },
+      });
+      console.log('Fetched posts:', posts);
+  
+      // Filter posts based on distance
+      const postsWithinRadius = posts.filter(post => {
+        const location = post.location as { lat: number; lng: number }; // Type assertion
+        const { lat, lng } = location;
+        const distance = haversine(userLat, userLng, lat, lng);
+        console.log(`Post at (${lat}, ${lng}) is ${distance} km away`);
+        return distance <= radiusKm;
+      });
+  
+      return postsWithinRadius;
+    } catch (error) {
+      console.error('Error fetching posts within radius:', error);
+      throw new Error('Error fetching posts within radius');
+    }
   }
   
   

@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const cors_1 = __importDefault(require("cors"));
+const authRoutes_1 = __importDefault(require("./routes/authRoutes"));
 const postRoutes_1 = __importDefault(require("./routes/postRoutes"));
 const commentRoutes_1 = __importDefault(require("./routes/commentRoutes"));
 const likeRoutes_1 = __importDefault(require("./routes/likeRoutes"));
@@ -17,6 +18,7 @@ app.use(express_1.default.json());
 app.use((0, cors_1.default)());
 app.use(express_1.default.urlencoded({ extended: true })); // For parsing application/x-www-form-urlencoded
 // Routes
+app.use('/auth', authRoutes_1.default);
 app.use(postRoutes_1.default);
 app.use(commentRoutes_1.default);
 app.use(likeRoutes_1.default);

@@ -23,6 +23,7 @@ app.use(express.urlencoded({ extended: true })); // For parsing application/x-ww
 
 
 // Routes
+app.use('/auth', authRoutes);
 app.use(postRoutes);
 app.use(commentRoutes);
 app.use(likeRoutes);

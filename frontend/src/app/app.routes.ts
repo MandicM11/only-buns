@@ -1,5 +1,4 @@
-import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
+import { Routes } from '@angular/router';
 import { LoginComponent } from './auth/login/login.component';
 import { RegisterComponent } from './auth/register/register.component';
 import { ActivateAccountComponent } from './activate-account/activate-account.component';
@@ -13,31 +12,21 @@ import { TrendsComponent } from './trends/trends.component';
 import { ChatComponent } from './chat/chat.component';
 import { ProfileComponent } from './profile/profile.component';
 import { PostEditComponent } from './post-edit/post-edit.component';
-import { UserMapComponent} from './user-map/user-map.component'
+import { UserMapComponent} from './user-map/user-map.component';
 
-
-
-
-const routes: Routes = [
+export const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
-  //{ path: '', redirectTo: '/posts', pathMatch: 'full' },  // Redirektovanje na login
   { path: 'activate/:token', component: ActivateAccountComponent },
   { path: 'posts', component: PostListComponent },
   { path: 'posts/:id', component: PostDetailComponent},
-  { path: 'create-post', component: PostCreateComponent,canActivate: [AuthGuard]  },
+  { path: 'create-post', component: PostCreateComponent, canActivate: [AuthGuard] },
   { path: 'home', component: HomeComponent },
   { path: 'posts/followed', component: FollowedPostsComponent },
   { path: 'trends', component: TrendsComponent },
   { path: 'chat', component: ChatComponent },
   { path: 'profile', component: ProfileComponent },
   { path: '', redirectTo: '/home', pathMatch: 'full' },
-  { path:  'nearby', component: UserMapComponent},
+  { path: 'nearby', component: UserMapComponent},
   { path: 'edit-post/:id', component: PostEditComponent }, 
 ];
-
-@NgModule({
-  imports: [RouterModule.forRoot(routes)],
-  exports: [RouterModule]
-})
-export class AppRoutingModule {}

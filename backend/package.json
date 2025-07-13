@@ -20,8 +20,9 @@
     "pg": "^8.13.1"
   },
   "scripts": {
-    "dev": "concurrently \"npm run start\" \"npm run test\"",
+    "dev": "npm run start",
     "start": "node dist/index.js",
+    "build": "tsc",
     "test": "dotenv -e .env.test jest"
   },
   "devDependencies": {

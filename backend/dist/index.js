@@ -11,6 +11,8 @@ const postRoutes_1 = __importDefault(require("./routes/postRoutes"));
 const commentRoutes_1 = __importDefault(require("./routes/commentRoutes"));
 const likeRoutes_1 = __importDefault(require("./routes/likeRoutes"));
 const userRoutes_1 = __importDefault(require("./routes/userRoutes"));
+const notificationRoutes_1 = __importDefault(require("./routes/notificationRoutes"));
+const cronJobs_1 = require("./scheduler/cronJobs");
 dotenv_1.default.config();
 const app = (0, express_1.default)();
 app.use('/uploads', express_1.default.static('/home/mirko/Documents/only-buns/backend/uploads'));
@@ -23,6 +25,7 @@ app.use(postRoutes_1.default);
 app.use(commentRoutes_1.default);
 app.use(likeRoutes_1.default);
 app.use(userRoutes_1.default);
+app.use(notificationRoutes_1.default);
 app.use((req, res) => {
     res.status(404).json({ error: 'Route not found' });
 });
@@ -39,4 +42,6 @@ app.use((err, req, res, next) => {
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Server radi na portu ${PORT}`);
+    // Start cron jobs for notifications
+    (0, cronJobs_1.startCronJobs)();
 });

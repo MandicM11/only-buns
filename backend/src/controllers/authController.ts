@@ -107,6 +107,12 @@ export const loginUser: RequestHandler = async (req: Request, res: Response): Pr
     //   return;
     // }
 
+    // Update last login time
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { lastLoginAt: new Date() }
+    });
+
     const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET!, { expiresIn: "1h" });
     res.json({ message: "Login successful", token });
   } catch (error) {

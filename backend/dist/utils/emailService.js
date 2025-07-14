@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.sendActivationEmail = void 0;
+exports.sendInactiveUserEmail = exports.sendActivationEmail = void 0;
 const nodemailer_1 = __importDefault(require("nodemailer"));
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
@@ -31,3 +31,60 @@ const sendActivationEmail = async (email, token) => {
     }
 };
 exports.sendActivationEmail = sendActivationEmail;
+const sendInactiveUserEmail = async (email, name, stats) => {
+    const transporter = nodemailer_1.default.createTransport({
+        service: "gmail",
+        auth: {
+            user: process.env.SMTP_USER,
+            pass: process.env.SMTP_PASSWORD,
+        },
+    });
+    const { platformStats, userStats } = stats;
+    const htmlContent = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+      <h2>Nedostajete nam, ${name}! 📱</h2>
+      <p>Niste pristupili aplikaciji u poslednjih 7 dana. Evo šta se dešavalo:</p>
+      
+      <div style="background-color: #f5f5f5; padding: 20px; border-radius: 8px; margin: 20px 0;">
+        <h3>📊 Statistike platforme (poslednja nedelja):</h3>
+        <ul>
+          <li><strong>${platformStats.newPosts}</strong> novih objava</li>
+          <li><strong>${platformStats.newComments}</strong> novih komentara</li>
+          <li><strong>${platformStats.newLikes}</strong> novih lajkova</li>
+          <li><strong>${platformStats.totalUsers}</strong> aktivnih korisnika</li>
+        </ul>
+      </div>
+      
+      <div style="background-color: #e8f4fd; padding: 20px; border-radius: 8px; margin: 20px 0;">
+        <h3>👤 Vaša aktivnost:</h3>
+        <ul>
+          <li><strong>${userStats.totalPosts}</strong> objava ukupno</li>
+          <li><strong>${userStats.likesReceived}</strong> lajkova na vašim objavama</li>
+          <li><strong>${userStats.commentsReceived}</strong> komentara na vašim objavama</li>
+          <li><strong>${userStats.totalLikes}</strong> lajkova koje ste dali</li>
+          <li><strong>${userStats.totalComments}</strong> komentara koje ste napisali</li>
+        </ul>
+      </div>
+      
+      <p style="text-align: center; margin: 30px 0;">
+        <a href="http://localhost:4200" style="background-color: #007bff; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; display: inline-block;">Vrati se u aplikaciju</a>
+      </p>
+      
+      <p style="color: #666; font-size: 14px;">Vaš tim Only Buns</p>
+    </div>
+  `;
+    try {
+        console.log("Sending inactive user notification email...");
+        await transporter.sendMail({
+            from: process.env.FROM_EMAIL,
+            to: email,
+            subject: "Nedostajete nam! 📱 - Nedeljni pregled aktivnosti",
+            html: htmlContent,
+        });
+        console.log("Inactive user notification email sent successfully.");
+    }
+    catch (error) {
+        console.error("Error sending inactive user notification email:", error);
+    }
+};
+exports.sendInactiveUserEmail = sendInactiveUserEmail;

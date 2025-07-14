@@ -7,8 +7,10 @@ import postRoutes from "./routes/postRoutes";
 import commentRoutes from "./routes/commentRoutes";
 import likeRoutes from "./routes/likeRoutes";
 import userRoutes from "./routes/userRoutes";
+import notificationRoutes from "./routes/notificationRoutes";
 import path from 'path';
 import { Request, Response, NextFunction } from 'express';
+import { startCronJobs } from './scheduler/cronJobs';
 
 
 
@@ -28,6 +30,7 @@ app.use(postRoutes);
 app.use(commentRoutes);
 app.use(likeRoutes);
 app.use(userRoutes);
+app.use(notificationRoutes);
 
 app.use((req, res) => {
     res.status(404).json({ error: 'Route not found' });
@@ -48,6 +51,8 @@ app.use((req, res) => {
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Server radi na portu ${PORT}`);
+    // Start cron jobs for notifications
+    startCronJobs();
 });
 
 

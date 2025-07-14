@@ -105,6 +105,11 @@ const loginUser = async (req, res) => {
         //   res.status(403).json({ message: "Please activate your account first." });
         //   return;
         // }
+        // Update last login time
+        await prisma.user.update({
+            where: { id: user.id },
+            data: { lastLoginAt: new Date() }
+        });
         const token = jsonwebtoken_1.default.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: "1h" });
         res.json({ message: "Login successful", token });
     }

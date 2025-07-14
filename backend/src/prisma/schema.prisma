@@ -20,6 +20,7 @@ model User {
   longitude  Float?
   isActive  Boolean   @default(false)
   createdAt DateTime  @default(now())
+  lastLoginAt DateTime?
   posts     Post[]    @relation("UserPosts") // obratna relacija
   comments  Comment[] @relation("UserComments") // obratna relacija
   likes     Like[]    @relation("UserLikes") // obratna relacija

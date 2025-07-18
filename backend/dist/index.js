@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const cors_1 = __importDefault(require("cors"));
+const redis_1 = require("./config/redis");
 const authRoutes_1 = __importDefault(require("./routes/authRoutes"));
 const postRoutes_1 = __importDefault(require("./routes/postRoutes"));
 const commentRoutes_1 = __importDefault(require("./routes/commentRoutes"));
@@ -40,6 +41,8 @@ app.use((err, req, res, next) => {
     });
 });
 const PORT = process.env.PORT || 3000;
+// Initialize Redis connection
+redis_1.redisClient.connect().catch(console.error);
 app.listen(PORT, () => {
     console.log(`Server radi na portu ${PORT}`);
     // Start cron jobs for notifications

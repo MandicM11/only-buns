@@ -1,6 +1,7 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
+import { redisClient } from './config/redis';
 import { registerUser } from './controllers/userController';
 import authRoutes from "./routes/authRoutes";
 import postRoutes from "./routes/postRoutes";
@@ -49,6 +50,10 @@ app.use((req, res) => {
   });
 
 const PORT = process.env.PORT || 3000;
+
+// Initialize Redis connection
+redisClient.connect().catch(console.error);
+
 app.listen(PORT, () => {
     console.log(`Server radi na portu ${PORT}`);
     // Start cron jobs for notifications

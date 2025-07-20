@@ -2,10 +2,24 @@
     <h2>{{ post.description }}</h2>
     <div class="image-wrapper">
       <img [src]="'http://localhost:3000' + post.image" alt="Post Image" class="image-wrapper" />
-      </div>
+    </div>
 
-    <a [routerLink]="['/posts', post.id]"> View Details </a>
+    <div class="post-actions">
+      <a [routerLink]="['/posts', post.id]">View Details</a>
+      
+      <!-- Dugme za promotovanje -->
+      <button 
+        *ngIf="!post.isPromoted" 
+        (click)="promotePost(post.id)" 
+        class="promote-btn">
+        Promote Post
+      </button>
+      
+      <!-- Status ako je već promotovan -->
+      <span *ngIf="post.isPromoted" class="promoted-status">
+        ✅ Promoted
+      </span>
+    </div>
   </div>
-  
 
   <button [routerLink]="['/create-post']">Create New Post</button>

@@ -98,6 +98,16 @@ export class PostController {
     }
   }
   
+  // Označava post kao promotivan
+  async promotePost(req: Request, res: Response): Promise<void> {
+    const { id } = req.params;
+    try {
+      const post = await postService.promotePost(Number(id));
+      res.status(200).json(post);
+    } catch (error) {
+      res.status(500).json({ error: 'Error promoting post' });
+    }
+  }
 }
 
 export const postController = new PostController();

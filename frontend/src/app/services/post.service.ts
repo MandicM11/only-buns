@@ -44,6 +44,10 @@ export class PostService {
   getPostsInRadius(userLat: number, userLng: number, radiusKm: number = 1000): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/withinBounds?userLat=${userLat}&userLng=${userLng}&radiusKm=${radiusKm}`);
   }
+
+  promotePost(id: number): Observable<any> {
+    return this.http.put(`${this.apiUrl}/${id}/promote`, {});
+  }
  
 
 

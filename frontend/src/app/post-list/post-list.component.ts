@@ -27,6 +27,32 @@ export class PostListComponent implements OnInit {
       }
     });
   }
+
+  promotePost(postId: number): void {
+    this.postService.promotePost(postId).subscribe({
+      next: (response) => {
+        console.log('Post promoted successfully:', response);
+        // Osvežavamo listu postova da prikažemo novi status
+        this.loadPosts();
+        alert('Post successfully promoted!');
+      },
+      error: (error) => {
+        console.error('Error promoting post:', error);
+        alert('Error promoting post. Please try again.');
+      }
+    });
+  }
+
+  private loadPosts(): void {
+    this.postService.getAllPosts().subscribe({
+      next: (response) => {
+        this.posts = response;
+      },
+      error: (error) => {
+        console.error('Error loading posts:', error);
+      }
+    });
+  }
   
   }
 

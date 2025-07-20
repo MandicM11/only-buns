@@ -37,6 +37,7 @@ model Post {
   comments    Comment[] @relation("PostComments") // obratna relacija
   likes       Like[]    @relation("PostLikes") // obratna relacija
   likesCount  Int      @default(0)  // Polje za broj lajkova
+  isPromoted  Boolean  @default(false) // Označava da li je post promotivan
 }
 
 

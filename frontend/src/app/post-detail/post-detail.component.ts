@@ -27,6 +27,7 @@ export class PostDetailComponent implements OnInit {
   latitude!: number;
   longitude!: number;
   userNames: { [key: number]: string } = {};
+  rateLimitErrorMessage: string = '';
 
   constructor(
     private postService: PostService,
@@ -108,7 +109,7 @@ export class PostDetailComponent implements OnInit {
       alert('User is not logged in!');
       return;
     }
-    
+    this.rateLimitErrorMessage = '';
     console.log('User ID is: ', this.userId);
     
     const commentData = { content: commentContent, postId: this.postId, userId: this.userId };
@@ -119,6 +120,11 @@ export class PostDetailComponent implements OnInit {
       }
     }, (error) => {
       console.error('Error adding comment:', error);
+      if (error.status === 429 && error.error && error.error.error) {
+        this.rateLimitErrorMessage = error.error.error;
+      } else {
+        this.rateLimitErrorMessage = 'Error adding comment. Please try again.';
+      }
     });
   }
   
@@ -180,6 +186,20 @@ export class PostDetailComponent implements OnInit {
       });
     }
   }
-  
+
+  promotePost(): void {
+    this.postService.promotePost(this.postId).subscribe({
+      next: (response) => {
+        console.log('Post promoted successfully:', response);
+        // Osvežavamo podatke o postu
+        this.fetchPostDetails();
+        alert('Post successfully promoted!');
+      },
+      error: (error) => {
+        console.error('Error promoting post:', error);
+        alert('Error promoting post. Please try again.');
+      }
+    });
+  }
   
 }

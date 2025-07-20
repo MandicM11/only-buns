@@ -2,6 +2,7 @@ import { PrismaClient } from '@prisma/client';
 import fs from 'fs';
 import path from 'path';
 import { cacheService } from './cacheService';
+import amqp from 'amqplib';
 
 const prisma = new PrismaClient();
 
@@ -17,6 +18,28 @@ const haversine = (lat1: number, lon1: number, lat2: number, lon2: number): numb
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   return R * c; // Distance in km
 };
+
+// Pomoćna funkcija za slanje poruke u RabbitMQ
+async function sendPromotedPostToAgencies(post: any) {
+  const RABBITMQ_URL = process.env.RABBITMQ_URL || 'amqp://localhost';
+  const EXCHANGE_NAME = 'promoted_posts';
+  const msg = JSON.stringify({
+    description: post.description,
+    createdAt: post.createdAt,
+    username: post.user.username,
+  });
+  try {
+    const conn = await amqp.connect(RABBITMQ_URL);
+    const channel = await conn.createChannel();
+    await channel.assertExchange(EXCHANGE_NAME, 'fanout', { durable: false });
+    channel.publish(EXCHANGE_NAME, '', Buffer.from(msg));
+    await channel.close();
+    await conn.close();
+    console.log('Sent promoted post to agencies:', msg);
+  } catch (err) {
+    console.error('Failed to send promoted post to agencies:', err);
+  }
+}
 
 export class PostService {
   // Save the image to disk
@@ -200,7 +223,18 @@ export class PostService {
       throw new Error('Error fetching posts within radius');
     }
   }
-  
+
+  // Označava post kao promotivan
+  async promotePost(postId: number) {
+    const updatedPost = await prisma.post.update({
+      where: { id: postId },
+      data: { isPromoted: true },
+      include: { user: true },
+    });
+    // Pozivamo slanje poruke agencijama
+    await sendPromotedPostToAgencies(updatedPost);
+    return updatedPost;
+  }
   
   
 }

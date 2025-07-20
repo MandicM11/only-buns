@@ -24,6 +24,20 @@
     <button (click)="deletePost()">Delete</button>
   </div>
 
+  <!-- Promote button and status -->
+  <div class="promote-section">
+    <button 
+      *ngIf="!post.isPromoted" 
+      (click)="promotePost()" 
+      class="promote-btn">
+      Promote Post
+    </button>
+    
+    <span *ngIf="post.isPromoted" class="promoted-status">
+      ✅ This post is promoted
+    </span>
+  </div>
+
   <div>
     <h3>Comments</h3>
     <div *ngFor="let comment of post.comments">
@@ -32,5 +46,8 @@
 
     <textarea #commentContent placeholder="Add a comment"></textarea>
     <button (click)="addComment(commentContent.value)">Comment</button>
+    <div *ngIf="rateLimitErrorMessage" style="color: red; margin-top: 5px;">
+      {{ rateLimitErrorMessage }}
+    </div>
   </div>
 </div>

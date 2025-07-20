@@ -12,3 +12,30 @@
   height: 100%;
   object-fit: cover; /* Ensures the image fills the div and maintains aspect ratio */
 }
+
+.post-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.promote-btn {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.promote-btn:hover {
+  background-color: #0056b3;
+}
+
+.promoted-status {
+  color: #28a745;
+  font-weight: bold;
+  font-size: 14px;
+}
